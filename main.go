@@ -42,18 +42,26 @@ func main() {
 		res, err := http.Get(fmt.Sprintf("https://api.zilstream.com/tokens/%s", strings.ToLower(symbol)))
 		if err != nil {
 			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s", symbol))
+			return
 		}
 
 		defer res.Body.Close()
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
 			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s", symbol))
+			return
 		}
 
 		var token TokenDetail
 		err = json.Unmarshal(body, &token)
 		if err != nil {
 			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s", symbol))
+			return
+		}
+
+		if token.Symbol == "" {
+			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s", symbol))
+			return
 		}
 
 		p := message.NewPrinter(language.English)
