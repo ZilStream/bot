@@ -58,7 +58,7 @@ func main() {
 
 		p := message.NewPrinter(language.English)
 		text := p.Sprintf("*%s (%s)* \n*%.2f ZIL - $%.2f*\nMarket Cap: $%.2f\nVolume (24h): $%.2f\nCirc. Supply: %.0f\n[View %s on ZilStream](https://zilstream.com/tokens/%s)", token.Name, token.Symbol, token.Rate, token.RateUSD, token.MarketCap, token.DailyVolume, token.CurrentSupply, token.Symbol, strings.ToLower(token.Symbol))
-		_, err = b.Send(m.Sender, text, &tb.SendOptions{ParseMode: tb.ModeMarkdown})
+		_, err = b.Send(m.Chat, text, &tb.SendOptions{ParseMode: tb.ModeMarkdown})
 		if err != nil {
 			fmt.Println(err)
 		}
