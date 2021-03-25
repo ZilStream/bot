@@ -36,31 +36,41 @@ func main() {
 		return
 	}
 
+	b.Handle("/start", func(m *tb.Message) {
+		text := "Hi there!\n\nTo retrieve the current price for a token:\n/zs [symbol]\n/zs gzil\n/zs zwap\n/zs port\netc.\n\nType /help to see this message again."
+		b.Send(m.Sender, text, &tb.SendOptions{ParseMode: tb.ModeMarkdown})
+	})
+
+	b.Handle("/help", func(m *tb.Message) {
+		text := "Hi there!\n\nTo retrieve the current price for a token:\n/zs [symbol]\n/zs gzil\n/zs zwap\n/zs port\netc."
+		b.Send(m.Sender, text, &tb.SendOptions{ParseMode: tb.ModeMarkdown})
+	})
+
 	b.Handle("/zs", func(m *tb.Message) {
 		symbol := m.Payload
 
 		res, err := http.Get(fmt.Sprintf("https://api.zilstream.com/tokens/%s", strings.ToLower(symbol)))
 		if err != nil {
-			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s", symbol))
+			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s, type /help for more information.", symbol))
 			return
 		}
 
 		defer res.Body.Close()
 		body, err := ioutil.ReadAll(res.Body)
 		if err != nil {
-			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s", symbol))
+			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s, type /help for more information.", symbol))
 			return
 		}
 
 		var token TokenDetail
 		err = json.Unmarshal(body, &token)
 		if err != nil {
-			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s", symbol))
+			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s, type /help for more information.", symbol))
 			return
 		}
 
 		if token.Symbol == "" {
-			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s", symbol))
+			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s, type /help for more information.", symbol))
 			return
 		}
 
