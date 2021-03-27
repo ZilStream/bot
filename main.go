@@ -102,8 +102,19 @@ func main() {
 		}
 
 		p := message.NewPrinter(language.English)
-		text := p.Sprintf("*%s (%s)* \n*%.2f ZIL - $%.2f*\nMarket Cap: $%.2f\nVolume (24h): $%.2f\nCirc. Supply: %.0f\n[View %s on ZilStream](https://zilstream.com/tokens/%s)", token.Name, token.Symbol, token.Rate, token.RateUSD, token.MarketCap, token.DailyVolume, token.CurrentSupply, token.Symbol, strings.ToLower(token.Symbol))
-		_, err = b.Send(m.Chat, text, &tb.SendOptions{ParseMode: tb.ModeMarkdown})
+		text := p.Sprintf("<b>%s (%s)</b>\n<b>%.2f ZIL - $%.2f</b>\n<pre>Change (24h):  %.2f%%\nMarket Cap:    $%.2f\nVolume (24h):  $%.2f\nCirc. Supply:  %.0f</pre>\n<a href='https://zilstream.com/tokens/%s'>View %s on ZilStream</a>",
+			token.Name,
+			token.Symbol,
+			token.Rate,
+			token.RateUSD,
+			token.MarketData.ChangePercentage24H,
+			token.MarketCap,
+			token.DailyVolume,
+			token.CurrentSupply,
+			strings.ToLower(token.Symbol),
+			token.Symbol,
+		)
+		_, err = b.Send(m.Chat, text, &tb.SendOptions{DisableWebPagePreview: true, ParseMode: tb.ModeHTML})
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -154,10 +165,10 @@ func main() {
 			token.MarketData.ZilReserve,
 			token.MarketData.TokenReserve,
 			token.Symbol,
-			token.Symbol,
 			strings.ToLower(token.Symbol),
+			token.Symbol,
 		)
-		_, err = b.Send(m.Chat, text, &tb.SendOptions{ParseMode: tb.ModeHTML})
+		_, err = b.Send(m.Chat, text, &tb.SendOptions{DisableWebPagePreview: true, ParseMode: tb.ModeHTML})
 		if err != nil {
 			fmt.Println(err)
 		}
