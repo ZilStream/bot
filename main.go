@@ -43,6 +43,7 @@ type TokenDetail struct {
 	Decimals            float64    `json:"decimals"`
 	Website             string     `json:"website"`
 	Whitepaper          string     `json:"whitepaper"`
+	Listed              bool       `json:"listed"`
 	CurrentSupply       float64    `json:"current_supply"`
 	DailyVolume         float64    `json:"daily_volume"`
 	SupplySkipAddresses string     `json:"supply_skip_addresses"`
@@ -102,6 +103,7 @@ func main() {
 		}
 
 		p := message.NewPrinter(language.English)
+
 		text := p.Sprintf("<b>%s (%s)</b>\n<b>%.2f ZIL - $%.2f</b>\n<pre>Change (24h):  %.2f%%\nMarket Cap:    $%.2f\nVolume (24h):  $%.2f\nCirc. Supply:  %.0f</pre>\n<a href='https://zilstream.com/tokens/%s'>View %s on ZilStream</a>",
 			token.Name,
 			token.Symbol,
@@ -114,6 +116,22 @@ func main() {
 			strings.ToLower(token.Symbol),
 			token.Symbol,
 		)
+
+		if !token.Listed {
+			text = p.Sprintf("<b>%s (%s)</b>\n<b>UNLISTED: BE EXTRA CAUTIOUS</b>\n%.2f ZIL - $%.2f\n<pre>Change (24h):  %.2f%%\nMarket Cap:    $%.2f\nVolume (24h):  $%.2f\nCirc. Supply:  %.0f</pre>\n<a href='https://zilstream.com/tokens/%s'>View %s on ZilStream</a>",
+				token.Name,
+				token.Symbol,
+				token.Rate,
+				token.RateUSD,
+				token.MarketData.ChangePercentage24H,
+				token.MarketCap,
+				token.DailyVolume,
+				token.CurrentSupply,
+				strings.ToLower(token.Symbol),
+				token.Symbol,
+			)
+		}
+
 		_, err = b.Send(m.Chat, text, &tb.SendOptions{DisableWebPagePreview: true, ParseMode: tb.ModeHTML})
 		if err != nil {
 			fmt.Println(err)
@@ -168,6 +186,29 @@ func main() {
 			strings.ToLower(token.Symbol),
 			token.Symbol,
 		)
+
+		if !token.Listed {
+			text = p.Sprintf("<b>%s (%s)</b>\n<b>UNLISTED: BE EXTRA CAUTIOUS</b>\n%.2f ZIL - $%.2f\n<pre>ATH:           %.2f\nChange (24h):  %.2f%%\nChange (7d):   %.2f%%\nMarket Cap:    $%.2f\nFully Diluted: $%.2f\nVolume (24h):  $%.2f\nCirc. Supply:  %.0f\nLiquidity:     $%.2f \n               %.2f ZIL\n               %.2f %s</pre>\n<a href='https://zilstream.com/tokens/%s'>View %s on ZilStream</a>",
+				token.Name,
+				token.Symbol,
+				token.Rate,
+				token.RateUSD,
+				token.MarketData.ATH,
+				token.MarketData.ChangePercentage24H,
+				token.MarketData.ChangePercentage7D,
+				token.MarketCap,
+				token.MarketData.FullyDilutedValuation,
+				token.DailyVolume,
+				token.CurrentSupply,
+				token.MarketData.CurrentLiquidity,
+				token.MarketData.ZilReserve,
+				token.MarketData.TokenReserve,
+				token.Symbol,
+				strings.ToLower(token.Symbol),
+				token.Symbol,
+			)
+		}
+
 		_, err = b.Send(m.Chat, text, &tb.SendOptions{DisableWebPagePreview: true, ParseMode: tb.ModeHTML})
 		if err != nil {
 			fmt.Println(err)
