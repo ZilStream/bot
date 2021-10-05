@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/zilstream/bot/helpers"
+	"github.com/zilstream/bot/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -34,5 +35,5 @@ func SetupDatabase() *gorm.DB {
 }
 
 func runMigrations(db *gorm.DB) {
-	db.AutoMigrate()
+	db.AutoMigrate(models.User{})
 }
