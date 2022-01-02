@@ -16,6 +16,8 @@ import (
 )
 
 type MarketData struct {
+	Rate                  float64 `json:"rate"`
+	RateUSD               float64 `json:"rate_usd"`
 	ATH                   float64 `json:"ath"`
 	ATL                   float64 `json:"atl"`
 	Change24H             float64 `json:"change_24h"`
@@ -44,12 +46,7 @@ type TokenDetail struct {
 	Website             string     `json:"website"`
 	Whitepaper          string     `json:"whitepaper"`
 	Listed              bool       `json:"listed"`
-	CurrentSupply       float64    `json:"current_supply"`
-	DailyVolume         float64    `json:"daily_volume"`
 	SupplySkipAddresses string     `json:"supply_skip_addresses"`
-	MarketCap           float64    `json:"market_cap"`
-	Rate                float64    `json:"rate"`
-	RateUSD             float64    `json:"rate_usd"`
 	MarketData          MarketData `json:"market_data"`
 }
 
@@ -77,7 +74,7 @@ func main() {
 	b.Handle("/zs", func(m *tb.Message) {
 		symbol := m.Payload
 
-		res, err := http.Get(fmt.Sprintf("https://api.zilstream.com/tokens/%s", strings.ToLower(symbol)))
+		res, err := http.Get(fmt.Sprintf("https://api.zilstream.com/v2/tokens/%s", strings.ToLower(symbol)))
 		if err != nil {
 			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s, type /help for more information.", symbol))
 			return
@@ -107,12 +104,12 @@ func main() {
 		text := p.Sprintf("<b>%s (%s)</b>\n<b>%.2f ZIL - $%.2f</b>\n<pre>Change (24h):  %.2f%%\nMarket Cap:    $%.2f\nVolume (24h):  $%.2f\nCirc. Supply:  %.0f</pre>\n<a href='https://zilstream.com/tokens/%s'>View %s on ZilStream</a>",
 			token.Name,
 			token.Symbol,
-			token.Rate,
-			token.RateUSD,
+			token.MarketData.Rate,
+			token.MarketData.RateUSD,
 			token.MarketData.ChangePercentage24H,
-			token.MarketCap,
-			token.DailyVolume,
-			token.CurrentSupply,
+			token.MarketData.MarketCap,
+			token.MarketData.DailyVolume,
+			token.MarketData.CurrentSupply,
 			strings.ToLower(token.Symbol),
 			token.Symbol,
 		)
@@ -121,12 +118,12 @@ func main() {
 			text = p.Sprintf("<b>%s (%s)</b>\n<b>UNLISTED: BE EXTRA CAUTIOUS</b>\n%.2f ZIL - $%.2f\n<pre>Change (24h):  %.2f%%\nMarket Cap:    $%.2f\nVolume (24h):  $%.2f\nCirc. Supply:  %.0f</pre>\n<a href='https://zilstream.com/tokens/%s'>View %s on ZilStream</a>",
 				token.Name,
 				token.Symbol,
-				token.Rate,
-				token.RateUSD,
+				token.MarketData.Rate,
+				token.MarketData.RateUSD,
 				token.MarketData.ChangePercentage24H,
-				token.MarketCap,
-				token.DailyVolume,
-				token.CurrentSupply,
+				token.MarketData.MarketCap,
+				token.MarketData.DailyVolume,
+				token.MarketData.CurrentSupply,
 				strings.ToLower(token.Symbol),
 				token.Symbol,
 			)
@@ -141,7 +138,7 @@ func main() {
 	b.Handle("/zss", func(m *tb.Message) {
 		symbol := m.Payload
 
-		res, err := http.Get(fmt.Sprintf("https://api.zilstream.com/tokens/%s", strings.ToLower(symbol)))
+		res, err := http.Get(fmt.Sprintf("https://api.zilstream.com/v2/tokens/%s", strings.ToLower(symbol)))
 		if err != nil {
 			b.Send(m.Sender, fmt.Sprintf("Couldn't find %s, type /help for more information.", symbol))
 			return
@@ -170,15 +167,15 @@ func main() {
 		text := p.Sprintf("<b>%s (%s)</b>\n<b>%.2f ZIL - $%.2f</b>\n<pre>ATH:           %.2f\nChange (24h):  %.2f%%\nChange (7d):   %.2f%%\nMarket Cap:    $%.2f\nFully Diluted: $%.2f\nVolume (24h):  $%.2f\nCirc. Supply:  %.0f\nLiquidity:     $%.2f \n               %.2f ZIL\n               %.2f %s</pre>\n<a href='https://zilstream.com/tokens/%s'>View %s on ZilStream</a>",
 			token.Name,
 			token.Symbol,
-			token.Rate,
-			token.RateUSD,
+			token.MarketData.Rate,
+			token.MarketData.RateUSD,
 			token.MarketData.ATH,
 			token.MarketData.ChangePercentage24H,
 			token.MarketData.ChangePercentage7D,
-			token.MarketCap,
+			token.MarketData.MarketCap,
 			token.MarketData.FullyDilutedValuation,
-			token.DailyVolume,
-			token.CurrentSupply,
+			token.MarketData.DailyVolume,
+			token.MarketData.CurrentSupply,
 			token.MarketData.CurrentLiquidity,
 			token.MarketData.ZilReserve,
 			token.MarketData.TokenReserve,
@@ -191,15 +188,15 @@ func main() {
 			text = p.Sprintf("<b>%s (%s)</b>\n<b>UNLISTED: BE EXTRA CAUTIOUS</b>\n%.2f ZIL - $%.2f\n<pre>ATH:           %.2f\nChange (24h):  %.2f%%\nChange (7d):   %.2f%%\nMarket Cap:    $%.2f\nFully Diluted: $%.2f\nVolume (24h):  $%.2f\nCirc. Supply:  %.0f\nLiquidity:     $%.2f \n               %.2f ZIL\n               %.2f %s</pre>\n<a href='https://zilstream.com/tokens/%s'>View %s on ZilStream</a>",
 				token.Name,
 				token.Symbol,
-				token.Rate,
-				token.RateUSD,
+				token.MarketData.Rate,
+				token.MarketData.RateUSD,
 				token.MarketData.ATH,
 				token.MarketData.ChangePercentage24H,
 				token.MarketData.ChangePercentage7D,
-				token.MarketCap,
+				token.MarketData.MarketCap,
 				token.MarketData.FullyDilutedValuation,
-				token.DailyVolume,
-				token.CurrentSupply,
+				token.MarketData.DailyVolume,
+				token.MarketData.CurrentSupply,
 				token.MarketData.CurrentLiquidity,
 				token.MarketData.ZilReserve,
 				token.MarketData.TokenReserve,
